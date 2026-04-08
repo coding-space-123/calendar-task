@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, addDays, isWithinInterval } from 'date-fns';
-import { ChevronLeft, ChevronRight, Edit3, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit3, Calendar as CalendarIcon, Sparkles } from 'lucide-react';
 
 export default function InteractiveCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -21,34 +21,23 @@ export default function InteractiveCalendar() {
   };
 
   const renderHeader = () => (
-    <div className="flex justify-between items-center px-4 py-6 bg-white border-b">
+    <div className="flex justify-between items-center px-6 py-8 bg-white border-b border-gray-100">
       <div className="flex flex-col">
-        <span className="text-3xl font-black text-blue-600 tracking-tighter uppercase">
+        <span className="text-4xl font-black text-blue-600 tracking-tighter uppercase leading-none">
           {format(currentMonth, "MMMM")}
         </span>
-        <span className="text-gray-400 font-bold tracking-widest -mt-1">{format(currentMonth, "yyyy")}</span>
+        <span className="text-gray-400 font-bold tracking-[0.3em] text-xs mt-1">{format(currentMonth, "yyyy")}</span>
       </div>
-      <div className="flex gap-2">
-        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 hover:bg-blue-50 rounded-full transition-colors text-blue-600 border border-blue-100">
+      <div className="flex gap-3">
+        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2.5 hover:bg-blue-600 hover:text-white rounded-xl transition-all duration-300 text-blue-600 border border-blue-100 shadow-sm">
           <ChevronLeft size={20} />
         </button>
-        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 hover:bg-blue-50 rounded-full transition-colors text-blue-600 border border-blue-100">
+        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2.5 hover:bg-blue-600 hover:text-white rounded-xl transition-all duration-300 text-blue-600 border border-blue-100 shadow-sm">
           <ChevronRight size={20} />
         </button>
       </div>
     </div>
   );
-
-  const renderDays = () => {
-    const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-    return (
-      <div className="grid grid-cols-7 mb-2">
-        {days.map(d => (
-          <div key={d} className="text-center text-[10px] font-black text-gray-400 py-2 tracking-widest">{d}</div>
-        ))}
-      </div>
-    );
-  };
 
   const renderCells = () => {
     const monthStart = startOfMonth(currentMonth);
@@ -71,26 +60,23 @@ export default function InteractiveCalendar() {
           <div
             key={day.toString()}
             className={`relative h-14 flex items-center justify-center cursor-pointer transition-all duration-300 group
-              ${!isCurrentMonth ? "text-gray-200" : "text-gray-700"}
-              ${isInRange && !isSelected ? "bg-blue-50" : ""}
-              ${isSelected ? "z-10" : ""}
+              ${!isCurrentMonth ? "text-gray-200" : "text-gray-700 font-medium"}
+              ${isInRange && !isSelected ? "bg-blue-50/80" : ""}
             `}
             onClick={() => onDateClick(cloneDay)}
           >
-            
             {isSelected && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-10 w-10 bg-blue-600 rounded-full shadow-lg shadow-blue-200 scale-110 transition-transform group-hover:scale-125" />
+              <div className="absolute inset-0 flex items-center justify-center z-0">
+                <div className="h-11 w-11 bg-blue-600 rounded-xl rotate-12 shadow-lg shadow-blue-200 group-hover:rotate-0 transition-transform duration-300" />
               </div>
             )}
 
-            <span className={`relative font-semibold text-sm ${isSelected ? "text-white" : "group-hover:text-blue-600"}`}>
+            <span className={`relative z-10 text-sm ${isSelected ? "text-white font-bold" : "group-hover:text-blue-600"}`}>
               {format(day, "d")}
             </span>
 
-            
             {isSameDay(day, new Date()) && !isSelected && (
-              <div className="absolute bottom-2 h-1 w-1 bg-blue-400 rounded-full" />
+              <div className="absolute top-2 right-2 h-1.5 w-1.5 bg-orange-400 rounded-full animate-pulse" />
             )}
           </div>
         );
@@ -103,57 +89,73 @@ export default function InteractiveCalendar() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 font-sans">
-      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row border border-white">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 md:p-8 font-sans">
+      <div className="w-full max-w-6xl bg-white rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row border-8 border-white">
 
-        
-        <div className="md:w-[45%] relative min-h-[300px] md:min-h-full overflow-hidden group">
-          <img
-            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80"
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            alt="Nature"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute bottom-10 left-10 text-white">
-            <div className="flex items-center gap-2 mb-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full w-fit">
-              <CalendarIcon size={14} className="text-blue-300" />
-              <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Adventure Awaits</span>
+        {/* Left Section: Aesthetic Hero & Quick Notes */}
+        <div className="md:w-[40%] relative bg-slate-900 flex flex-col">
+          <div className="h-2/3 relative overflow-hidden group">
+            <img
+              src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80"
+              alt="Workspace"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+
+            {/* Design Element from PDF: Overlay Label */}
+            <div className="absolute bottom-8 left-8">
+              <div className="flex items-center gap-2 mb-3 bg-blue-500/30 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 w-fit">
+                <Sparkles size={14} className="text-blue-200" />
+                <span className="text-[10px] font-bold tracking-[0.2em] text-white uppercase">2026 Edition</span>
+              </div>
+              <h2 className="text-5xl font-black text-white leading-none tracking-tighter">PLAN<br />AHEAD.</h2>
             </div>
-            <h2 className="text-4xl font-black mb-1 leading-tight tracking-tight">Focus on <br /> the Goals.</h2>
-            <p className="text-white/70 text-sm font-medium">Plan your journey step by step.</p>
+          </div>
+
+          {/* Lines for Notes like physical calendar */}
+          <div className="h-1/3 p-8 bg-slate-900 flex flex-col justify-center">
+            <h3 className="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Quick Reminders</h3>
+            <div className="space-y-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="border-b border-slate-700 w-full h-4 opacity-50" />
+              ))}
+            </div>
           </div>
         </div>
 
-        
-        <div className="md:w-[55%] flex flex-col bg-white">
+        {/* Right Section: Calendar Engine */}
+        <div className="md:w-[60%] flex flex-col">
           {renderHeader()}
 
-          <div className="p-4 md:p-8 flex-grow">
-            {renderDays()}
-            <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+          <div className="p-6 md:p-10 flex-grow">
+            <div className="grid grid-cols-7 mb-4">
+              {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (
+                <div key={d} className="text-center text-[11px] font-black text-slate-400 tracking-widest">{d}</div>
+              ))}
+            </div>
+
+            <div className="rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50">
               {renderCells()}
             </div>
 
-           
+            {/* Main Interactive Notes */}
             <div className="mt-10">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 px-2">
                 <div className="flex items-center gap-2">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <Edit3 size={16} className="text-blue-600" />
-                  </div>
-                  <h3 className="font-black text-xs uppercase tracking-widest text-gray-500">Important Memos</h3>
+                  <Edit3 size={18} className="text-blue-500" />
+                  <h3 className="font-bold text-sm text-slate-700">Detailed Notes</h3>
                 </div>
                 {startDate && (
-                  <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded-md">
-                    Target: {format(startDate, "MMM d")} {endDate ? `- ${format(endDate, "MMM d")}` : ""}
-                  </span>
+                  <div className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg border border-blue-100">
+                    {format(startDate, "dd MMM")} {endDate ? `→ ${format(endDate, "dd MMM")}` : ""}
+                  </div>
                 )}
               </div>
               <textarea
-                placeholder="Write your monthly notes here..."
+                placeholder="What's happening this month?"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-100 focus:bg-white p-4 rounded-2xl text-sm text-gray-600 outline-none transition-all h-28 resize-none shadow-inner"
+                className="w-full bg-slate-50 border-2 border-slate-100 focus:border-blue-200 focus:bg-white p-5 rounded-[2rem] text-sm text-slate-600 outline-none transition-all h-32 resize-none shadow-inner"
               />
             </div>
           </div>
