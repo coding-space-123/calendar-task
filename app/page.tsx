@@ -1,13 +1,14 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, addDays, isWithinInterval } from 'date-fns';
-import { ChevronLeft, ChevronRight, Edit3, Calendar as CalendarIcon, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit3, Sparkles, MapPin, Clock } from 'lucide-react';
 
 export default function InteractiveCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [note, setNote] = useState("");
+  const [bgImage, setBgImage] = useState(`https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=1200&sig=${new Date().getDate()}`);
 
   const onDateClick = (day: Date) => {
     if (!startDate || (startDate && endDate)) {
@@ -15,25 +16,37 @@ export default function InteractiveCalendar() {
       setEndDate(null);
     } else if (day < startDate) {
       setStartDate(day);
+    } else if (isSameDay(day, startDate)) {
+      setStartDate(null);
     } else {
       setEndDate(day);
     }
   };
 
   const renderHeader = () => (
-    <div className="flex justify-between items-center px-6 py-8 bg-white border-b border-gray-100">
+    <div className="flex justify-between items-center px-8 py-10 bg-white border-b border-gray-50">
       <div className="flex flex-col">
-        <span className="text-4xl font-black text-blue-600 tracking-tighter uppercase leading-none">
+        <span className="text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none">
           {format(currentMonth, "MMMM")}
         </span>
-        <span className="text-gray-400 font-bold tracking-[0.3em] text-xs mt-1">{format(currentMonth, "yyyy")}</span>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="h-1.5 w-10 bg-gradient-to-r from-blue-600 to-indigo-400 rounded-full" />
+          <span className="text-slate-400 font-bold tracking-[0.4em] text-[10px]">{format(currentMonth, "yyyy")}</span>
+        </div>
       </div>
-      <div className="flex gap-3">
-        <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2.5 hover:bg-blue-600 hover:text-white rounded-xl transition-all duration-300 text-blue-600 border border-blue-100 shadow-sm">
-          <ChevronLeft size={20} />
+
+      <div className="flex gap-4">
+        <button
+          onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+          className="group p-3.5 bg-blue-50/50 hover:bg-blue-600 rounded-2xl transition-all duration-500 border border-blue-100/50 shadow-sm"
+        >
+          <ChevronLeft size={22} className="text-blue-600 group-hover:text-white transition-colors" />
         </button>
-        <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2.5 hover:bg-blue-600 hover:text-white rounded-xl transition-all duration-300 text-blue-600 border border-blue-100 shadow-sm">
-          <ChevronRight size={20} />
+        <button
+          onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+          className="group p-3.5 bg-blue-50/50 hover:bg-blue-600 rounded-2xl transition-all duration-500 border border-blue-100/50 shadow-sm"
+        >
+          <ChevronRight size={22} className="text-blue-600 group-hover:text-white transition-colors" />
         </button>
       </div>
     </div>
@@ -55,102 +68,122 @@ export default function InteractiveCalendar() {
         const isSelected = (startDate && isSameDay(day, startDate)) || (endDate && isSameDay(day, endDate));
         const isInRange = startDate && endDate && isWithinInterval(day, { start: startDate, end: endDate });
         const isCurrentMonth = isSameMonth(day, monthStart);
+        const isToday = isSameDay(day, new Date());
 
         days.push(
           <div
             key={day.toString()}
-            className={`relative h-14 flex items-center justify-center cursor-pointer transition-all duration-300 group
-              ${!isCurrentMonth ? "text-gray-200" : "text-gray-700 font-medium"}
-              ${isInRange && !isSelected ? "bg-blue-50/80" : ""}
+            className={`relative h-16 flex items-center justify-center cursor-pointer transition-all duration-300 group
+              ${!isCurrentMonth ? "text-slate-200" : "text-slate-600 font-semibold"}
+              ${isInRange && !isSelected ? "bg-blue-50/40" : ""}
             `}
             onClick={() => onDateClick(cloneDay)}
           >
             {isSelected && (
               <div className="absolute inset-0 flex items-center justify-center z-0">
-                <div className="h-11 w-11 bg-blue-600 rounded-xl rotate-12 shadow-lg shadow-blue-200 group-hover:rotate-0 transition-transform duration-300" />
+                <div className="h-12 w-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-xl shadow-blue-200 ring-4 ring-white animate-in zoom-in duration-300" />
               </div>
             )}
 
-            <span className={`relative z-10 text-sm ${isSelected ? "text-white font-bold" : "group-hover:text-blue-600"}`}>
+            {isToday && !isSelected && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="w-8 border-b-2 border-blue-500 mt-7 opacity-60 animate-pulse" />
+              </div>
+            )}
+
+            <span className={`relative z-10 text-sm ${isSelected ? "text-white font-bold" : isToday ? "text-blue-600 font-black" : "group-hover:text-blue-500 group-hover:scale-125 transition-transform"}`}>
               {format(day, "d")}
             </span>
-
-            {isSameDay(day, new Date()) && !isSelected && (
-              <div className="absolute top-2 right-2 h-1.5 w-1.5 bg-orange-400 rounded-full animate-pulse" />
-            )}
           </div>
         );
         day = addDays(day, 1);
       }
-      rows.push(<div className="grid grid-cols-7 border-b border-gray-50 last:border-0" key={day.toString()}>{days}</div>);
+      rows.push(<div className="grid grid-cols-7 border-b border-slate-50 last:border-0" key={day.toString()}>{days}</div>);
       days = [];
     }
     return <div className="bg-white">{rows}</div>;
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 md:p-8 font-sans">
-      <div className="w-full max-w-6xl bg-white rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row border-8 border-white">
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-4 md:p-10 font-sans">
+      <div className="w-full max-w-6xl bg-white rounded-[3.5rem] shadow-[0_50px_120px_-30px_rgba(0,0,0,0.12)] overflow-hidden flex flex-col md:flex-row border-[12px] border-white">
 
-        <div className="md:w-[40%] relative bg-slate-900 flex flex-col">
-          <div className="h-2/3 relative overflow-hidden group">
+        <div className="md:w-[42%] relative flex flex-col bg-slate-900 min-h-[450px]">
+          <div className="absolute inset-0 overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80"
-              alt="Workspace"
+              src={bgImage}
+              key={bgImage}
+              className="w-full h-full object-cover opacity-80 transition-transform duration-[4000ms] hover:scale-105"
+              alt="Background"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
-
-            <div className="absolute bottom-8 left-8">
-              <div className="flex items-center gap-2 mb-3 bg-blue-500/30 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 w-fit">
-                <Sparkles size={14} className="text-blue-200" />
-                <span className="text-[10px] font-bold tracking-[0.2em] text-white uppercase">2026 Edition</span>
-              </div>
-              <h2 className="text-5xl font-black text-white leading-none tracking-tighter">PLAN<br />AHEAD.</h2>
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/30 to-transparent" />
           </div>
 
-          <div className="h-1/3 p-8 bg-slate-900 flex flex-col justify-center">
-            <h3 className="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Quick Reminders</h3>
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="border-b border-slate-700 w-full h-4 opacity-50" />
-              ))}
+          <div className="relative z-10 p-12 flex flex-col h-full justify-between">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-xl px-5 py-2.5 rounded-2xl border border-white/20 w-fit">
+              <Sparkles size={16} className="text-yellow-400 animate-spin-slow" />
+              <span className="text-[10px] font-black tracking-[0.25em] text-white uppercase">Daily Vibe</span>
+            </div>
+
+            <div className="mt-auto">
+              <div className="flex items-center gap-2 text-blue-400 mb-3">
+                <MapPin size={16} />
+                <span className="text-[11px] font-black uppercase tracking-[0.2em]">Global Inspiration</span>
+              </div>
+              <h2 className="text-7xl font-black text-white leading-[0.8] tracking-tighter mb-6">
+                STAY<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                  INSPIRED.
+                </span>
+              </h2>
+              <div className="p-5 bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10">
+                <p className="text-white/70 text-sm font-medium leading-relaxed italic">
+                  "The secret of your future is hidden in your daily routine."
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="md:w-[60%] flex flex-col">
+        <div className="md:w-[58%] flex flex-col bg-white">
           {renderHeader()}
 
-          <div className="p-6 md:p-10 flex-grow">
-            <div className="grid grid-cols-7 mb-4">
-              {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (
-                <div key={d} className="text-center text-[11px] font-black text-slate-400 tracking-widest">{d}</div>
+          <div className="p-8 md:p-12 flex-grow">
+            <div className="grid grid-cols-7 mb-8">
+              {['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'].map(d => (
+                <div key={d} className="text-center text-[10px] font-black text-slate-300 tracking-[0.3em]">{d}</div>
               ))}
             </div>
 
-            <div className="rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50">
+            <div className="rounded-[3rem] overflow-hidden border border-slate-50 shadow-2xl shadow-slate-200/40 mb-12">
               {renderCells()}
             </div>
 
-            <div className="mt-10">
-              <div className="flex items-center justify-between mb-4 px-2">
-                <div className="flex items-center gap-2">
-                  <Edit3 size={18} className="text-blue-500" />
-                  <h3 className="font-bold text-sm text-slate-700">Detailed Notes</h3>
-                </div>
-                {startDate && (
-                  <div className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg border border-blue-100">
-                    {format(startDate, "dd MMM")} {endDate ? `→ ${format(endDate, "dd MMM")}` : ""}
+            <div className="relative group">
+              <div className="flex items-center justify-between mb-5 px-2">
+                <div className="flex items-center gap-3">
+                  <div className="h-11 w-11 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm">
+                    <Edit3 size={22} />
                   </div>
-                )}
+                  <div>
+                    <h3 className="font-black text-xs uppercase tracking-widest text-slate-800 leading-none">Journal</h3>
+                    <p className="text-[10px] text-slate-400 font-bold mt-1.5 uppercase tracking-tighter">Capture your thoughts</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 py-2 px-4 bg-slate-50 rounded-2xl border border-slate-100">
+                  <Clock size={14} className="text-blue-500" />
+                  <span className="text-[11px] font-black text-slate-600 uppercase tracking-tight">
+                    {format(new Date(), "eeee, do MMM")}
+                  </span>
+                </div>
               </div>
+
               <textarea
-                placeholder="What's happening this month?"
+                placeholder="Write your plans for the month..."
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                className="w-full bg-slate-50 border-2 border-slate-100 focus:border-blue-200 focus:bg-white p-5 rounded-[2rem] text-sm text-slate-600 outline-none transition-all h-32 resize-none shadow-inner"
+                className="w-full bg-slate-50/50 border-2 border-slate-100 focus:border-blue-200 focus:bg-white p-7 rounded-[2.5rem] text-sm text-slate-600 outline-none transition-all h-36 resize-none shadow-inner leading-relaxed"
               />
             </div>
           </div>
