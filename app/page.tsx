@@ -92,7 +92,6 @@ export default function InteractiveCalendar() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 md:p-8 font-sans">
       <div className="w-full max-w-6xl bg-white rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row border-8 border-white">
 
-        {/* Left Section: Aesthetic Hero & Quick Notes */}
         <div className="md:w-[40%] relative bg-slate-900 flex flex-col">
           <div className="h-2/3 relative overflow-hidden group">
             <img
@@ -102,7 +101,6 @@ export default function InteractiveCalendar() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
 
-            {/* Design Element from PDF: Overlay Label */}
             <div className="absolute bottom-8 left-8">
               <div className="flex items-center gap-2 mb-3 bg-blue-500/30 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 w-fit">
                 <Sparkles size={14} className="text-blue-200" />
@@ -112,7 +110,6 @@ export default function InteractiveCalendar() {
             </div>
           </div>
 
-          {/* Lines for Notes like physical calendar */}
           <div className="h-1/3 p-8 bg-slate-900 flex flex-col justify-center">
             <h3 className="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Quick Reminders</h3>
             <div className="space-y-4">
@@ -123,7 +120,6 @@ export default function InteractiveCalendar() {
           </div>
         </div>
 
-        {/* Right Section: Calendar Engine */}
         <div className="md:w-[60%] flex flex-col">
           {renderHeader()}
 
@@ -138,7 +134,6 @@ export default function InteractiveCalendar() {
               {renderCells()}
             </div>
 
-            {/* Main Interactive Notes */}
             <div className="mt-10">
               <div className="flex items-center justify-between mb-4 px-2">
                 <div className="flex items-center gap-2">
