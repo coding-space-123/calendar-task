@@ -77,7 +77,7 @@ export default function InteractiveCalendar() {
             `}
             onClick={() => onDateClick(cloneDay)}
           >
-            {/* Range Selection Background logic */}
+            
             {isSelected && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-10 w-10 bg-blue-600 rounded-full shadow-lg shadow-blue-200 scale-110 transition-transform group-hover:scale-125" />
@@ -88,7 +88,7 @@ export default function InteractiveCalendar() {
               {format(day, "d")}
             </span>
 
-            {/* Today Marker */}
+            
             {isSameDay(day, new Date()) && !isSelected && (
               <div className="absolute bottom-2 h-1 w-1 bg-blue-400 rounded-full" />
             )}
@@ -106,7 +106,7 @@ export default function InteractiveCalendar() {
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 font-sans">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row border border-white">
 
-        {/* Left Side: Visual Anchor (PDF style) */}
+        
         <div className="md:w-[45%] relative min-h-[300px] md:min-h-full overflow-hidden group">
           <img
             src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80"
@@ -124,7 +124,7 @@ export default function InteractiveCalendar() {
           </div>
         </div>
 
-        {/* Right Side: Logic & UI */}
+        
         <div className="md:w-[55%] flex flex-col bg-white">
           {renderHeader()}
 
@@ -134,7 +134,7 @@ export default function InteractiveCalendar() {
               {renderCells()}
             </div>
 
-            {/* Notes Section - PDF UI Inspired */}
+           
             <div className="mt-10">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
